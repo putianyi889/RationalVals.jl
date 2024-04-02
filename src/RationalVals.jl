@@ -1,6 +1,6 @@
 module RationalVals
 
-import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
+import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt, (:), step, first # misc
 import Base: iszero, isone, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,
@@ -21,6 +21,8 @@ export IntegerVal, RationalVal
 The integer `p`. See also [`RationalVal`](@ref). The parameter allows one to dispatch on value.
 """
 struct IntegerVal{p} <: Integer end
+
+IntegerVal(p::Integer) = IntegerVal{Int(p)}()
 
 """
     RationalVal{p,q} <: Real
@@ -51,7 +53,9 @@ promote_rule(::Type{<:RationalValUnion}, ::Type{<:RationalValUnion}) = Rational{
 for f in (:-,:isqrt)
     @eval $f(p::RationalValUnion) = RationalValUnion($f(_value(p)))
 end
+zero(::RationalValUnion) = IntegerVal{0}()
 zero(::Type{<:RationalValUnion}) = IntegerVal{0}()
+one(::RationalValUnion) = IntegerVal{1}()
 one(::Type{<:RationalValUnion}) = IntegerVal{1}()
 
 # Boolean
@@ -73,6 +77,7 @@ end
 include("arithmetic.jl")
 include("power.jl")
 include("trig.jl")
+include("range.jl")
 
 deg2rad(::IntegerVal{0}) = IntegerVal{0}()
 rad2deg(::IntegerVal{0}) = IntegerVal{0}()
@@ -107,16 +112,19 @@ end
 for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{0})
     @eval *(::$T, ::IntegerVal{0}) = IntegerVal{0}()
 end
-for T in (Float16, Float32, Float64, BigFloat, BigInt, Rational, AbstractIrrational, Irrational{:ℯ}, RationalValUnion, IntegerVal{0}, IntegerVal{-1}, IntegerVal{1})
+for T in (Float16, Float32, Float64, BigFloat, BigInt, Rational, AbstractIrrational, Irrational{:ℯ}, RationalVal, IntegerVal, IntegerVal{0}, IntegerVal{-1}, IntegerVal{1})
     @eval ^(::$T, ::IntegerVal{0}) = IntegerVal{1}()
 end
-for T in (Float16, Float32, Float64, BigFloat, BigInt, Rational, AbstractIrrational, Irrational{:ℯ}, RationalValUnion, IntegerVal{-1})
+for T in (Float16, Float32, Float64, BigFloat, BigInt, Rational, AbstractIrrational, Irrational{:ℯ}, IntegerVal, RationalVal, IntegerVal{-1})
     @eval ^(x::$T, ::IntegerVal{1}) = x
 end
-for T in (Bool, BigInt, Integer, Rational, AbstractIrrational, IntegerVal, IntegerVal{1})
+for T in (Bool, BigInt, Integer, Rational, AbstractIrrational)
     @eval ^(::IntegerVal{0}, x::$T) = iszero(x)
 end
-for T in (Bool, BigInt, Integer, Rational, AbstractIrrational, IntegerVal{1}, IntegerVal)
+for T in (RationalVal, IntegerVal, IntegerVal{1})
+    @eval ^(::IntegerVal{0}, x::$T) = IntegerVal{0}()
+end
+for T in (Bool, BigInt, Integer, Rational, AbstractIrrational, RationalVal, IntegerVal{1}, IntegerVal)
     @eval ^(::IntegerVal{1}, ::$T) = IntegerVal{1}()
 end
 for T in (Base.TwicePrecision, Complex, AbstractChar)
@@ -136,6 +144,9 @@ end
 
 log(::Irrational{:ℯ}, ::IntegerVal{1}) = IntegerVal{0}()
 
+promote_rule(::Type{<:IntegerVal}, ::Type{<:RationalVal}) = Rational{Int}
+
+IntegerVal(p::IntegerVal) = p
 RationalValUnion(x::RationalValUnion) = x
 Rational{T}(p::IntegerVal) where {T<:Integer} = Rational{T}(_value(p))
 

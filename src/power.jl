@@ -10,14 +10,6 @@
     end
 end
 
-@generated function ^(::IntegerVal{p}, ::RationalVal{1,q}) where {p,q}
-    if Int(floor(p^(1 / q)))^q == p
-        IntegerVal{Int(floor(p^(1 / q)))}()
-    else
-        p^(1 / q)
-    end
-end
-
 ^(::IntegerVal{p}, ::RationalVal{q,r}) where {p,q,r} = (IntegerVal{p}()^RationalVal{1,r}())^IntegerVal{q}()
 ^(::RationalVal{p1,q1}, r::RationalValUnion) where {p1,q1} = IntegerVal{p1}()^r / IntegerVal{q1}()^r
 

@@ -3,8 +3,15 @@ uuid = "9cc9807e-afa3-477e-9918-05cd8014b9f1"
 authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
 version = "0.0.1"
 
+[weakdeps]
+Infinities = "e1ba4f0e-776d-440f-acd9-e1d2e9742647"
+
+[extensions]
+RationalValsInfinitiesExt = "Infinities"
+
 [compat]
 Aqua = "0.8"
+Infinities = "0.1"
 Test = "1"
 julia = "1"
 
