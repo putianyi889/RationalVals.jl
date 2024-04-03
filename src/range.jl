@@ -1,7 +1,6 @@
-struct IntegerValTo{S<:IntegerVal,T} <: AbstractUnitRange{T}
-    stop::T
+struct TypedEndsUnitRange{T,L,R} <: AbstractUnitRange{T}
+    start::L
+    stop::R
 end
-first(::IntegerValTo{S}) where S = S()
-
-(:)(::IntegerVal{p}, q::Integer) where p = IntegerValTo{IntegerVal{p},typeof(q)}(max(oftype(q, p) - one(q), q))
-(:)(::IntegerVal{1},q::Integer) = Base.OneTo(q)
+(:)(p::P, q::Q) where {P<:IntegerVal,Q<:Integer} = TypedEndsUnitRange{promote_type(P, Q),P,Q}(p, q)
+(:)(p::P, q::Q) where {P<:Integer,Q<:IntegerVal} = TypedEndsUnitRange{promote_type(P, Q),P,Q}(p, q)

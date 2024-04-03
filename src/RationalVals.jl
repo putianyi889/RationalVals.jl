@@ -13,7 +13,7 @@ import Base: sin, cos, tan,
 import Base: log, log2, log10, log1p,
     exp, exp2, exp10, expm1 # power
 
-export IntegerVal, RationalVal
+export IntegerVal, RationalVal, TypedEndsUnitRange
 
 """
     IntegerVal{p} <: Integer
@@ -149,5 +149,7 @@ promote_rule(::Type{<:IntegerVal}, ::Type{<:RationalVal}) = Rational{Int}
 IntegerVal(p::IntegerVal) = p
 RationalValUnion(x::RationalValUnion) = x
 Rational{T}(p::IntegerVal) where {T<:Integer} = Rational{T}(_value(p))
+
+(:)(p::P, q::Q) where {P<:IntegerVal,Q<:IntegerVal} = TypedEndsUnitRange{promote_type(P, Q),P,Q}(p, q)
 
 end

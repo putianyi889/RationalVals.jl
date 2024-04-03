@@ -1,9 +1,9 @@
 module RationalValsInfinitiesExt
 
-import Infinities: InfiniteCardinal
-import RationalVals: IntegerValTo
-import Base: (:)
+import Infinities: Infinity, InfiniteCardinal
+import RationalVals: TypedEndsUnitRange, IntegerVal
+import Base: (:), eltype
 
-(:)(::IntegerVal{p},x::InfiniteCardinal{0}) = IntegerValTo{IntegerVal{p},InfiniteCardinal{0}}(x)
+(:)(p::P, ::Union{Infinity, InfiniteCardinal{0}}) where {P<:IntegerVal} = TypedEndsUnitRange{Int,P,InfiniteCardinal{0}}(p, InfiniteCardinal{0}())
 
 end # module

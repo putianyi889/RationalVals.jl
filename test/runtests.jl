@@ -39,13 +39,17 @@ end
         @test tan(v(0)) ≡ v(0)
         @test tand(v(45)) ≡ v(1)
         @test tand(v(-180)) ≡ v(0)
-        @test tanpi(v(-2)) ≡ v(0)
+        if VERSION >= v"1.10"
+            @test tanpi(v(-2)) ≡ v(0)
+        end
         @test tanh(v(0)) ≡ v(0)
         @test atan(v(0)) ≡ v(0)
     end
     @testset "sincos" begin
         @test sincos(v(0)) ≡ (v(0),v(1))
-        @test sincosd(v(360)) ≡ (v(0),v(1))
+        if VERSION >= v"1.3"
+            @test sincosd(v(360)) ≡ (v(0),v(1))
+        end
         @test sincospi(v(-2)) ≡ (v(0),v(1))
     end
     @testset "exp/log" begin
@@ -59,6 +63,20 @@ end
     @testset "misc" begin
         @test sinc(v(0)) ≡ v(1)
         @test cosc(v(0)) ≡ v(0)
+    end
+end
+
+@testset "range" begin
+    @test IntegerVal{1}():IntegerVal{5}() isa TypedEndsUnitRange{Int}
+    @test IntegerVal{1}():5 isa TypedEndsUnitRange{Int}
+    @test 1:IntegerVal{5}() isa TypedEndsUnitRange{Int}
+end
+
+@testset "extensions" begin
+    @testset "Infinities" begin
+        import Infinities
+        @test IntegerVal{1}():Infinities.∞ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
+        @test IntegerVal{1}():Infinities.ℵ₀ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
     end
 end
 
