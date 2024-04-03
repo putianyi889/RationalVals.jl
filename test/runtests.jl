@@ -74,11 +74,13 @@ end
     @test 1:IntegerVal{5}() isa TypedEndsUnitRange{Int}
 end
 
-@testset "extensions" begin
-    @testset "Infinities" begin
-        import Infinities
-        @test IntegerVal{1}():Infinities.∞ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
-        @test IntegerVal{1}():Infinities.ℵ₀ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
+@static if VERSION >= v"1.9"
+    @testset "extensions" begin
+        @testset "Infinities" begin
+            import Infinities
+            @test IntegerVal{1}():Infinities.∞ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
+            @test IntegerVal{1}():Infinities.ℵ₀ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
+        end
     end
 end
 
