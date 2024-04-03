@@ -1,6 +1,6 @@
 module RationalVals
 
-import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt, (:), step, first, last # misc
+import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
 import Base: iszero, isone, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,
@@ -12,6 +12,7 @@ import Base: sin, cos, tan,
     sincos, sinc, cosc # trigonometric
 import Base: log, log2, log10, log1p,
     exp, exp2, exp10, expm1 # power
+import Base: (:), step, first, last, getindex # range
 
 export IntegerVal, RationalVal, TypedEndsUnitRange
 

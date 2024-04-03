@@ -7,3 +7,6 @@ end
 
 first(r::TypedEndsUnitRange) = r.start
 last(r::TypedEndsUnitRange) = r.stop
+
+getindex(r::TypedEndsUnitRange{S,<:RationalValUnion}, i::IntegerVal) where S = first(r) + i - IntegerVal{1}()
+getindex(r::TypedEndsUnitRange{S}, s::AbstractUnitRange{T}) where {S,T<:Integer} = r[first(s)]:r[last(s)]
