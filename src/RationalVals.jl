@@ -1,6 +1,6 @@
 module RationalVals
 
-import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt, (:), step, first # misc
+import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt, (:), step, first, last # misc
 import Base: iszero, isone, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,

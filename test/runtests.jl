@@ -78,8 +78,13 @@ end
     @testset "extensions" begin
         @testset "Infinities" begin
             import Infinities
+            r = IntegerVal{1}():Infinities.∞
             @test IntegerVal{1}():Infinities.∞ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
             @test IntegerVal{1}():Infinities.ℵ₀ isa TypedEndsUnitRange{Int,IntegerVal{1},Infinities.InfiniteCardinal{0}}
+            @test r[1] === 1
+            @test r[2] === 2
+            @test first(r) === IntegerVal{1}()
+            @test last(r) === Infinities.ℵ₀
         end
     end
 end
