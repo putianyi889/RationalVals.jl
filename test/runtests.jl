@@ -50,7 +50,9 @@ end
         if VERSION >= v"1.3"
             @test sincosd(v(360)) ≡ (v(0),v(1))
         end
-        @test sincospi(v(-2)) ≡ (v(0),v(1))
+        if VERSION >= v"1.6"
+            @test sincospi(v(-2)) ≡ (v(0),v(1))
+        end
     end
     @testset "exp/log" begin
         @test exp(v(0)) ≡ v(1)
