@@ -147,6 +147,7 @@ end
 log(::Irrational{:ℯ}, ::IntegerVal{1}) = IntegerVal{0}()
 
 promote_rule(::Type{<:IntegerVal}, ::Type{<:RationalVal}) = Rational{Int}
+promote_rule(::Type{BigFloat}, ::Type{<:RationalValUnion}) = BigFloat
 
 IntegerVal(p::IntegerVal) = p
 RationalValUnion(x::RationalValUnion) = x
