@@ -1,4 +1,4 @@
-struct TypedEndsUnitRange{T,L,R} <: AbstractUnitRange{T}
+struct TypedEndsUnitRange{T<:Integer,L<:Integer,R<:Integer} <: AbstractUnitRange{T}
     start::L
     stop::R
 end
@@ -10,3 +10,5 @@ last(r::TypedEndsUnitRange) = r.stop
 
 getindex(r::TypedEndsUnitRange{S,<:RationalValUnion}, i::IntegerVal) where S = first(r) + i - IntegerVal{1}()
 getindex(r::TypedEndsUnitRange{S}, s::AbstractUnitRange{T}) where {S,T<:Integer} = r[first(s)]:r[last(s)]
+
+oneto(r::IntegerVal) = IntegerVal(1):r

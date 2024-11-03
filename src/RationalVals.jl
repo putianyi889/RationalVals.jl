@@ -12,7 +12,7 @@ import Base: sin, cos, tan,
     sincos, sinc, cosc # trigonometric
 import Base: log, log2, log10, log1p,
     exp, exp2, exp10, expm1 # power
-import Base: (:), step, first, last, getindex # range
+import Base: (:), step, first, last, getindex, oneto # range
 
 export IntegerVal, RationalVal, TypedEndsUnitRange
 
@@ -47,6 +47,7 @@ promote_rule(::Type{Bool}, ::Type{IntegerVal{1}}) = Bool
 promote_rule(::Type{T}, ::Type{<:RationalVal}) where {T<:Integer} = Rational{T}
 promote_rule(::Type{Bool}, ::Type{<:RationalVal}) = Rational{Int}
 promote_rule(::Type{<:IntegerVal}, ::Type{<:IntegerVal}) = Int
+promote_rule(::Type{T}, ::Type{<:RationalValUnion}) where T<:AbstractFloat = T
 promote_rule(::Type{<:RationalValUnion}, ::Type{<:RationalValUnion}) = Rational{Int}
 
 (::Type{T})(p::RationalValUnion) where {T<:Real} = T(_value(p))

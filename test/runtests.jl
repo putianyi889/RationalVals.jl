@@ -69,9 +69,10 @@ end
 end
 
 @testset "range" begin
-    @test IntegerVal{1}():IntegerVal{5}() isa TypedEndsUnitRange{Int}
-    @test IntegerVal{1}():5 isa TypedEndsUnitRange{Int}
-    @test 1:IntegerVal{5}() isa TypedEndsUnitRange{Int}
+    @test v(1):v(5) isa TypedEndsUnitRange{Int,<:IntegerVal,<:IntegerVal}
+    @test v(1):5 isa TypedEndsUnitRange{Int,<:IntegerVal,Int}
+    @test 1:v(5) isa TypedEndsUnitRange{Int,Int,<:IntegerVal}
+    @test Base.oneto(v(5)) ≡ v(1):v(5)
 end
 
 @static if VERSION >= v"1.9"
