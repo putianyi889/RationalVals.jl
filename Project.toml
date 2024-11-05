@@ -1,7 +1,7 @@
 name = "RationalVals"
 uuid = "9cc9807e-afa3-477e-9918-05cd8014b9f1"
 authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
-version = "0.0.2"
+version = "0.0.3"
 
 [weakdeps]
 Infinities = "e1ba4f0e-776d-440f-acd9-e1d2e9742647"
