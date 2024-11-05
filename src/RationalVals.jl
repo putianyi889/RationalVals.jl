@@ -1,6 +1,6 @@
 module RationalVals
 
-import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
+import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, oneunit, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
 import Base: iszero, isone, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,
@@ -12,9 +12,10 @@ import Base: sin, cos, tan,
     sincos, sinc, cosc # trigonometric
 import Base: log, log2, log10, log1p,
     exp, exp2, exp10, expm1 # power
-import Base: (:), step, first, last, getindex, oneto # range
+import Base: (:), step, first, last, length, unsafe_getindex, oneto # range
+import Base.Broadcast: DefaultArrayStyle, broadcasted
 
-export IntegerVal, RationalVal, TypedEndsUnitRange
+export IntegerVal, RationalVal, TypedEndsStepRange
 
 """
     IntegerVal{p} <: Integer
@@ -59,6 +60,7 @@ zero(::RationalValUnion) = IntegerVal{0}()
 zero(::Type{<:RationalValUnion}) = IntegerVal{0}()
 one(::RationalValUnion) = IntegerVal{1}()
 one(::Type{<:RationalValUnion}) = IntegerVal{1}()
+oneunit(::RationalValUnion) = IntegerVal{1}()
 
 # Boolean
 for f in (:iszero, :isone)
@@ -153,6 +155,22 @@ IntegerVal(p::IntegerVal) = p
 RationalValUnion(x::RationalValUnion) = x
 Rational{T}(p::IntegerVal) where {T<:Integer} = Rational{T}(_value(p))
 
-(:)(p::P, q::Q) where {P<:IntegerVal,Q<:IntegerVal} = TypedEndsUnitRange{promote_type(P, Q),P,Q}(p, q)
+(:)(start::RationalValUnion, step::RationalValUnion, stop::RationalValUnion) = _steprange(start, step, stop)
+
+(:)(start::Real, step::RationalValUnion, stop::RationalValUnion) = _steprange(start, step, stop)
+(:)(start::RationalValUnion, step::Real, stop::RationalValUnion) = _steprange(start, step, stop)
+(:)(start::RationalValUnion, step::RationalValUnion, stop::Real) = _steprange(start, step, stop)
+
+(:)(start::Real, step::IntegerVal{1}, stop::RationalValUnion) = _steprange(start, step, stop)
+(:)(start::RationalValUnion, step::IntegerVal{1}, stop::Real) = _steprange(start, step, stop)
+(:)(start::RationalValUnion, step::IntegerVal{1}, stop::RationalValUnion) = _steprange(start, step, stop)
+
+(:)(start::RationalValUnion, step::AbstractFloat, stop::RationalValUnion) = _steprange(start, step, stop)
+(:)(start::T, step::RationalValUnion, stop::T) where T<:AbstractFloat = _steprange(start, step, stop)
+
+(:)(start::T, ::IntegerVal{1}, stop::T) where T<:Real = start:stop
+(:)(start::T, ::IntegerVal{1}, stop::T) where T<:AbstractFloat = start:stop
+
+(:)(start::RationalValUnion, stop::RationalValUnion) = start:IntegerVal(1):stop
 
 end
