@@ -10,7 +10,19 @@
     end
 end
 
-^(::IntegerVal{p}, ::RationalVal{q,r}) where {p,q,r} = (IntegerVal{p}()^RationalVal{1,r}())^IntegerVal{q}()
+@generated function ^(::IntegerVal{p}, ::RationalVal{q,r}) where {p,q,r}
+    ret = p^(q//r)
+    isinteger(ret) ? IntegerVal{Int(ret)}() : ret
+end
+
+for func in (:sqrt,:cbrt)
+    @eval @generated function $func(::IntegerVal{p}) where p
+        ret = $func(p)
+        isinteger(ret) ? IntegerVal{Int(ret)}() : ret
+    end
+    @eval $func(::RationalVal{p,q}) where {p,q} = $func(IntegerVal{p}())/$func(IntegerVal{q}())
+end
+
 ^(::RationalVal{p1,q1}, r::RationalValUnion) where {p1,q1} = IntegerVal{p1}()^r / IntegerVal{q1}()^r
 
 log(::IntegerVal{1}) = IntegerVal{0}()

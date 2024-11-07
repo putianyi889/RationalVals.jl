@@ -5,9 +5,16 @@ using Aqua
 v(p::Int) = IntegerVal{p}()
 v(p::Rational{Int}) = RationalVal{numerator(p),denominator(p)}()
 
-@testset "promotion" begin
+@testset "boolean" begin
     @test v(0) == 0
     @test v(1) == true
+    @test iszero(v(0)) ≡ isone(v(1)) ≡ (v(2) == v(2)) ≡ (v(1 // 2) == v(1 // 2)) ≡ v(1)
+    @test iszero(v(1)) ≡ isone(v(0)) ≡ (v(2) == v(1 // 2)) ≡ v(0)
+    @test_broken (v(0) < v(1 // 3) < v(1 // 2) < v(1)) ≡ (v(0) ≤ v(1 // 3) ≤ v(1 // 2) ≤ v(1)) ≡ (isless(v(0), v(1))) ≡ (v(1) > v(0)) ≡ (v(1) ≥ v(0)) ≡ v(1)
+end
+
+@testset "arithmetic" begin
+    @test v(2)^v(1 // 2) ≡ sqrt(2)
 end
 
 @testset "misc" begin
@@ -95,6 +102,7 @@ end
             @test last(r) ≡ Infinities.ℵ₀
             @test r[1:10] ≡ 1:10
             @test r[IntegerVal{1}()] ≡ IntegerVal{1}()
+
         end
     end
 end

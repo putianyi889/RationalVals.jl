@@ -3,22 +3,32 @@ uuid = "9cc9807e-afa3-477e-9918-05cd8014b9f1"
 authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
 version = "0.0.3"
 
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [weakdeps]
 Infinities = "e1ba4f0e-776d-440f-acd9-e1d2e9742647"
+IrrationalConstants = "92d709cd-6900-40b7-9082-c6be49f344b6"
 
 [extensions]
 RationalValsInfinitiesExt = "Infinities"
+RationalValsIrrationalConstantsExt = "IrrationalConstants"
 
 [compat]
 Aqua = "0.8"
+Dates = "1"
 Infinities = "0.1"
+IrrationalConstants = "0.2"
+LinearAlgebra = "1"
 Test = "1"
 julia = "1"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Infinities = "e1ba4f0e-776d-440f-acd9-e1d2e9742647"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Aqua", "Infinities", "Test"]
+test = ["Aqua", "Infinities", "LinearAlgebra", "Test"]
