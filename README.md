@@ -16,6 +16,6 @@ As this is a low-level package, only a few special values are implemented for ir
   - It does not subtype `Number`, which reduces chance of ambiguities and downstream precompilation overhead. On the other hand, it loses generic support for number types shipped with base Julia.
   - The math function support is more incomplete than RationalVals.jl at the moment, although it is capable of supporting everything.
 
-## See also
+## What you might also want
 - [IrrationalConstants.jl](https://github.com/JuliaMath/IrrationalConstants.jl)
 - [Infinities.jl](https://github.com/JuliaMath/Infinities.jl)
