@@ -104,6 +104,27 @@ end
             @test r[IntegerVal{1}()] ≡ IntegerVal{1}()
 
         end
+        @testset "IrrationalConstants" begin
+            using IrrationalConstants
+            for (a, b) in ((quartπ, halfπ), (halfπ, π), (π, twoπ), (twoπ, fourπ), (inv4π, inv2π), (inv2π, invπ), (invπ, twoinvπ), (twoinvπ, fourinvπ), (sqrthalfπ, sqrt2π), (sqrtπ, sqrt4π), (invsqrt2, sqrt2))
+                @test a * v(2) ≡ v(2) * a ≡ b
+                @test b * v(1 // 2) ≡ v(1 // 2) * b ≡ b / v(2) ≡ a
+                @test a / b ≡ v(1 // 2)
+                @test b / a ≡ v(2)
+            end
+            for (a, b) in ((quartπ, π), (halfπ, twoπ), (π, fourπ), (inv4π, invπ), (inv2π, twoinvπ), (invπ, fourinvπ))
+                @test a * v(4) ≡ v(4) * a ≡ b
+                @test b * v(1 // 4) ≡ v(1 // 4) * b ≡ b / v(4) ≡ a
+                @test a / b ≡ v(1 // 4)
+                @test b / a ≡ v(4)
+            end
+            for (a, b) in ((quartπ, twoπ), (halfπ, fourπ), (inv4π, twoinvπ), (inv2π, fourinvπ))
+                @test a * v(8) ≡ v(8) * a ≡ b
+                @test b * v(1 // 8) ≡ v(1 // 8) * b ≡ b / v(8) ≡ a
+                @test a / b ≡ v(1 // 8)
+                @test b / a ≡ v(8)
+            end
+        end
     end
 end
 
