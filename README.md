@@ -12,3 +12,6 @@ As this is a low-level package, only a few special values are implemented for ir
   - It has more generic types, such as `StaticBool`, `StaticInteger`, `StaticReal`, `StaticNumber`, etc.. RationalVals.jl only supports `IntegerVal` for `Int` and `RationalVal` for `Rational{Int}`. Overflowing is detected and prohibited.
   - It has less specializations. You need to use `@stat` to explicitly make use of the type parameters. RationalVals.jl focuses on specializations and does everything implicitly.
   - Since it's an old package, it uses "glue" solution. RationalVals.jl makes use of the post-1.9 package extensions.
+- [Static.jl](https://github.com/SciML/Static.jl/)
+  - It does not subtype `Number`, which reduces chance of ambiguities and downstream precompilation overhead. On the other hand, it loses generic support for number types shipped with base Julia.
+  - The math function support is more incomplete than RationalVals.jl at the moment, although it is capable of supporting everything.
