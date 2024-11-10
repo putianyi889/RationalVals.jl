@@ -2,11 +2,16 @@ module RationalValsInfiniteArraysExt
 
 using InfiniteArrays, RationalVals
 import Base: (:)
-import Base.Broadcast: broadcasted, DefaultArrayStyle
-import InfiniteArrays: InfRanges, RealInfinity, OneToInf
+import Base.Broadcast: broadcasted, DefaultArrayStyle, BroadcastStyle
+import InfiniteArrays: InfRanges, RealInfinity, OneToInf, LazyLayout, MemoryLayout, InfiniteCardinal,LazyArrayStyle
 import RationalVals: _first, _step, _steprange
 
 _first(::OneToInf) = IntegerVal{1}()
+
+const InfRangeFromRationalVal = Union{<:TypedEndsStepRange{<:Any,<:Any,<:Any,<:Union{InfiniteCardinal{0},RealInfinity}},<:ConstRange{<:Any,RealInfinity}}
+
+MemoryLayout(::Type{<:InfRangeFromRationalVal}) = LazyLayout()
+BroadcastStyle(::Type{<:InfRangeFromRationalVal}) = LazyArrayStyle{1}()
 
 # ambiguities
 (:)(start::Real, step::RationalValUnion, stop::RealInfinity) = _steprange(start, step, stop)

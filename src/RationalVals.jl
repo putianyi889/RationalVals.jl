@@ -57,6 +57,7 @@ promote_rule(::Type{<:RationalValUnion}, ::Type{<:RationalValUnion}) = Rational{
 promote_rule(::Type{Rational{T}}, ::Type{<:RationalValUnion}) where {T<:Integer} = Rational{T}
 
 (::Type{T})(p::RationalValUnion) where {T<:Real} = T(_value(p))
+Integer(x::IntegerVal) = x
 
 for f in (:-, :isqrt)
     @eval $f(p::RationalValUnion) = RationalValUnion($f(_value(p)))
@@ -113,7 +114,7 @@ end
 for T in (Base.TwicePrecision, Complex, AbstractChar)
     @eval RationalValUnion(x::$T) = RationalValUnion(Real(x))
 end
-for T in (:Float16, :BigFloat, :BigInt, :Integer, :Rational)
+for T in (:Float16, :BigFloat, :BigInt, :Rational)
     @eval $T(p::IntegerVal) = $T(_value(p))
 end
 for T in (:Bool,)

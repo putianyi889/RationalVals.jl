@@ -110,6 +110,7 @@ end
             @test last(r) ≡ ℵ₀
             @test r[1:10] ≡ 1:10
             @test r[IntegerVal{1}()] ≡ IntegerVal{1}()
+            @test InfiniteArrays.MemoryLayout(r) ≡ InfiniteArrays.LazyLayout()
 
             @test fld(RealInfinity(), v(1 // 2)) ≡ RealInfinity()
             @test v(1 // 2) * Base.oneto(∞) isa TypedEndsStepRange{Real,RationalVal{1,2},RationalVal{1,2},RealInfinity}

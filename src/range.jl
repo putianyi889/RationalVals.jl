@@ -22,7 +22,7 @@ length(r::ConstRange) = r.length
 TypedEndsStepRange{T}(r::TypedEndsStepRange) where {T} = TypedEndsStepRange{T}(r.start, r.step, r.stop)
 AbstractRange{T}(r::TypedEndsStepRange) where {T} = TypedEndsStepRange{T}(r)
 AbstractRange{T}(r::ConstRange) where {T} = ConstRange(T(r.value), r.length)
-AbstractVector{T}(r::Union{TypedEndsStepRange,ConstRange}) where T=AbstractRange{T}(r)
+AbstractVector{T}(r::Union{TypedEndsStepRange,ConstRange}) where {T} = AbstractRange{T}(r)
 
 _rangestop(start, step, stop) = convert(Integer, fld(stop - start, step)) * step + start
 _rangestop(::Integer, ::IntegerVal{1}, stop) = floor(Integer, stop)
@@ -38,7 +38,9 @@ end
 
 (:)(start::Real, ::IntegerVal{1}, stop::Real) = start:stop
 
-unsafe_getindex(r::TypedEndsStepRange{S,<:RationalValUnion}, i::Integer) where {S} = _first(r) + _step(r) * (i - oneunit(i))
+_raw_getindex(r::TypedEndsStepRange{S,<:RationalValUnion}, i::Integer) where {S} = _first(r) + _step(r) * (i - oneunit(i))
+unsafe_getindex(r::TypedEndsStepRange{S,<:RationalValUnion}, i::Integer) where {S} = S(_raw_getindex(r, i))
+unsafe_getindex(r::TypedEndsStepRange{S,<:RationalValUnion}, i::RationalValUnion) where {S} = _raw_getindex(r, i)
 
 oneto(r::IntegerVal) = IntegerVal(1):r
 
