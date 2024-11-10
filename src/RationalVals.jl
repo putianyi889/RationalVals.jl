@@ -1,6 +1,7 @@
 module RationalVals
 
 import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, oneunit, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
+import Base: div, divgcd # integer/rational
 import Base: iszero, isone, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,
@@ -13,12 +14,12 @@ import Base: sin, cos, tan,
 import Base: log, log2, log10, log1p,
     exp, exp2, exp10, expm1,
     sqrt, cbrt, fourthroot # power
-import Base: (:), step, first, last, length, unsafe_getindex, oneto # range
+import Base: (:), step, first, last, length, axes, unsafe_getindex, oneto # range
 import Base.Broadcast: DefaultArrayStyle, broadcasted
 import Dates
 import LinearAlgebra
 
-export IntegerVal, RationalVal, TypedEndsStepRange, RationalValUnion
+export IntegerVal, RationalVal, TypedEndsStepRange, RationalValUnion, ConstRange
 
 """
     IntegerVal{p} <: Integer
@@ -53,6 +54,7 @@ promote_rule(::Type{Bool}, ::Type{<:RationalVal}) = Rational{Int}
 promote_rule(::Type{<:IntegerVal}, ::Type{<:IntegerVal}) = Int
 promote_rule(::Type{T}, ::Type{<:RationalValUnion}) where {T<:AbstractFloat} = T
 promote_rule(::Type{<:RationalValUnion}, ::Type{<:RationalValUnion}) = Rational{Int}
+promote_rule(::Type{Rational{T}}, ::Type{<:RationalValUnion}) where {T<:Integer} = Rational{T}
 
 (::Type{T})(p::RationalValUnion) where {T<:Real} = T(_value(p))
 
@@ -66,14 +68,10 @@ one(::Type{<:RationalValUnion}) = IntegerVal{1}()
 oneunit(::RationalValUnion) = IntegerVal{1}()
 
 # Boolean
-iszero(::IntegerVal{0}) = IntegerVal{1}()
-iszero(::RationalValUnion) = IntegerVal{0}()
-isone(::IntegerVal{1}) = IntegerVal{1}()
-isone(::RationalValUnion) = IntegerVal{0}()
-==(::IntegerVal{p}, ::IntegerVal{p}) where {p} = IntegerVal{1}()
-==(::RationalVal{p,q}, ::RationalVal{p,q}) where {p,q} = IntegerVal{1}()
-==(::RationalValUnion, ::RationalValUnion) = IntegerVal{0}()
-for op in (:<, :(<=))
+for f in (:iszero, :isone)
+    @eval $f(p::RationalValUnion) = $f(_value(p))
+end
+for op in (:<, :(<=), :(==))
     @eval $op(p::RationalValUnion, q::RationalValUnion) = $op(_value(p), _value(q))
 end
 
@@ -103,27 +101,9 @@ show(io::IO, ::RationalVal{-1,4}) = print(io, "-¼")
 show(io::IO, ::RationalVal{-3,4}) = print(io, "-¾")
 
 # ambiguities
-include("ambiguities.jl")
 import Base: Float16, BigFloat, Bool, BigInt, Integer, Rational
+include("ambiguities.jl")
 
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion)
-    @eval +(::IntegerVal{0}, b::$T) = b
-end
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion)
-    @eval +(a::$T, ::IntegerVal{0}) = a
-end
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{0}, IntegerVal{1})
-    @eval *(::IntegerVal{1}, b::$T) = b
-end
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{0})
-    @eval *(a::$T, ::IntegerVal{1}) = a
-end
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion)
-    @eval *(::IntegerVal{0}, ::$T) = IntegerVal{0}()
-end
-for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{0})
-    @eval *(::$T, ::IntegerVal{0}) = IntegerVal{0}()
-end
 for T in (Float16, Float32, Float64, BigFloat, BigInt, Rational, AbstractIrrational, Irrational{:ℯ}, RationalVal, IntegerVal, IntegerVal{0}, IntegerVal{-1}, IntegerVal{1})
     @eval ^(::$T, ::IntegerVal{0}) = IntegerVal{1}()
 end
@@ -140,7 +120,6 @@ for T in (:Bool,)
     @eval $T(p::RationalValUnion) = $T(_value(p))
 end
 
-+(::IntegerVal{0}, ::IntegerVal{0}) = IntegerVal{0}()
 ^(::IntegerVal{-1}, x::BigInt) = isodd(x) ? -one(x) : one(x)
 ^(::IntegerVal{-1}, ::IntegerVal{p}) where {p} = isodd(p) ? IntegerVal{-1}() : IntegerVal{1}()
 ^(::IntegerVal{-1}, x::Bool) = x ? -1 : 1

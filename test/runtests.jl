@@ -8,13 +8,16 @@ v(p::Rational{Int}) = RationalVal{numerator(p),denominator(p)}()
 @testset "boolean" begin
     @test v(0) == 0
     @test v(1) == true
-    @test iszero(v(0)) ≡ isone(v(1)) ≡ (v(2) == v(2)) ≡ (v(1 // 2) == v(1 // 2)) ≡ v(1)
-    @test iszero(v(1)) ≡ isone(v(0)) ≡ (v(2) == v(1 // 2)) ≡ v(0)
-    @test_broken (v(0) < v(1 // 3) < v(1 // 2) < v(1)) ≡ (v(0) ≤ v(1 // 3) ≤ v(1 // 2) ≤ v(1)) ≡ (isless(v(0), v(1))) ≡ (v(1) > v(0)) ≡ (v(1) ≥ v(0)) ≡ v(1)
+    @test iszero(v(0)) ≡ isone(v(1)) ≡ (v(2) == v(2)) ≡ (v(1 // 2) == v(1 // 2)) ≡ true
+    @test iszero(v(1)) ≡ isone(v(0)) ≡ (v(2) == v(1 // 2)) ≡ false
+    @test (v(0) < v(1 // 3) < v(1 // 2) < v(1)) ≡ (v(0) ≤ v(1 // 3) ≤ v(1 // 2) ≤ v(1)) ≡ (isless(v(0), v(1))) ≡ (v(1) > v(0)) ≡ (v(1) ≥ v(0)) ≡ true
 end
 
 @testset "arithmetic" begin
+    @test 2 // 3 - v(1 // 2) ≡ 1 // 6
     @test v(2)^v(1 // 2) ≡ sqrt(2)
+    @test div(1, v(1)) ≡ div(v(1), 1) ≡ 1
+    @test Base.divgcd(1, v(1)) ≡ Base.divgcd(v(1), 1) ≡ (1, 1)
 end
 
 @testset "misc" begin
@@ -85,24 +88,31 @@ end
     @test length(r) ≡ v(5)
     @test 2 * r ≡ r * 2 ≡ 2:2:10
     @test v(2) * r ≡ r * v(2) ≡ v(2):v(2):v(10)
+    @test v(0) * r isa ConstRange
+
+    @test v(1 // 2):5 ≡ v(1 // 2):9//2
 end
 
 @static if VERSION >= v"1.9"
     @testset "extensions" begin
         @testset "Infinities" begin
-            import Infinities
+            using Infinities, InfiniteArrays
 
-            @test IntegerVal{1}():Infinities.∞ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},Infinities.InfiniteCardinal{0}}
-            @test IntegerVal{1}():Infinities.ℵ₀ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},Infinities.InfiniteCardinal{0}}
+            @test IntegerVal{1}():∞ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
+            @test IntegerVal{1}():ℵ₀ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
 
-            r = IntegerVal{1}():Infinities.∞
+            r = IntegerVal{1}():∞
             @test r[1] ≡ 1
             @test r[2] ≡ 2
             @test first(r) ≡ IntegerVal{1}()
-            @test last(r) ≡ Infinities.ℵ₀
+            @test last(r) ≡ ℵ₀
             @test r[1:10] ≡ 1:10
             @test r[IntegerVal{1}()] ≡ IntegerVal{1}()
 
+            @test fld(RealInfinity(), v(1 // 2)) ≡ RealInfinity()
+            @test v(1 // 2) * Base.oneto(∞) isa TypedEndsStepRange{Real,RationalVal{1,2},RationalVal{1,2},RealInfinity}
+
+            @test v(0) * ∞ ≡ v(0) * ℵ₀ ≡ v(0) * (-∞) ≡ v(0)
         end
         @testset "IrrationalConstants" begin
             using IrrationalConstants

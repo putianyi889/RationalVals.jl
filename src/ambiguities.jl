@@ -1,5 +1,30 @@
 const SMAOTM = LinearAlgebra.StridedMaybeAdjOrTransMat
 
++(::IntegerVal{0}, ::IntegerVal{0}) = IntegerVal{0}()
+for T in (Integer, Rational, AbstractIrrational, RationalValUnion)
+    @eval +(::IntegerVal{0}, b::$T) = b
+    @eval +(a::$T, ::IntegerVal{0}) = a
+end
+
+*(::IntegerVal{1}, ::IntegerVal{1}) = IntegerVal{1}()
+for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{0}, IntegerVal{-1})
+    @eval *(::IntegerVal{1}, b::$T) = b
+    @eval *(a::$T, ::IntegerVal{1}) = a
+end
+
+*(::IntegerVal{0}, ::IntegerVal{0}) = IntegerVal{0}()
+for T in (Integer, Rational, AbstractIrrational, RationalValUnion, IntegerVal{-1})
+    @eval *(::IntegerVal{0}, ::$T) = IntegerVal{0}()
+    @eval *(::$T, ::IntegerVal{0}) = IntegerVal{0}()
+end
+
+for T in (RationalValUnion, IntegerVal{-1}, Integer, Rational)
+    @eval *(a::$T, ::IntegerVal{-1}) = -a
+end
+for T in (RationalValUnion, Integer, Rational)
+    @eval *(::IntegerVal{-1}, b::$T) = -b
+end
+
 for T in (Number, RationalValUnion, BitArray, Complex, IntegerVal{1},
     StepRangeLen{<:Real,<:Base.TwicePrecision}, Base.TwicePrecision,
     AbstractArray,
@@ -60,4 +85,9 @@ for T in (Irrational{:ℯ}, IntegerVal, RationalVal)
     @eval ^(a::$T, ::RationalVal{1,2}) = sqrt(a)
     @eval ^(a::$T, ::RationalVal{1,3}) = cbrt(a)
     @eval ^(a::$T, ::RationalVal{1,4}) = fourthroot(a)
+end
+
+for T in (TypedEndsStepRange, LinRange, StepRangeLen)
+    @eval broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::RationalValUnion, r::$T) = x*_first(r):x*_step(r):x*last(r)
+    @eval broadcasted(::DefaultArrayStyle{1}, ::typeof(*), ::IntegerVal{0}, r::$T) = ConstRange(IntegerVal{0}, length(r))
 end

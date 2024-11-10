@@ -5,6 +5,8 @@
 *(a::Real, ::IntegerVal{1}) = a
 *(::IntegerVal{0}, ::Real) = IntegerVal{0}()
 *(::Real, ::IntegerVal{0}) = IntegerVal{0}()
+*(::IntegerVal{-1}, b::Real) = -b
+*(a::Real, ::IntegerVal{-1}) = -a
 
 ^(::IntegerVal{1}, ::Real) = IntegerVal{1}()
 ^(::IntegerVal{0}, x::Real) = iszero(x)
@@ -20,3 +22,11 @@
 /(::IntegerVal{1}, x::Number) = inv(x)
 inv(::IntegerVal{1}) = IntegerVal(1)
 inv(::IntegerVal{-1}) = IntegerVal(-1)
+
+function _divgcd(x, y)
+    g = gcd(Base.uabs(x), Base.uabs(y))
+    div(x, g), div(y, g)
+end
+divgcd(x::Integer, y::IntegerVal) = _divgcd(x, _value(y))
+divgcd(x::IntegerVal, y::Integer) = _divgcd(_value(x), y)
+divgcd(::IntegerVal{p}, ::IntegerVal{q}) where {p,q} = IntegerVal{_divgcd(p, q)}()
