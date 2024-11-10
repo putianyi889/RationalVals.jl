@@ -88,9 +88,11 @@ end
     @test length(r) ≡ v(5)
     @test 2 * r ≡ r * 2 ≡ 2:2:10
     @test v(2) * r ≡ r * v(2) ≡ v(2):v(2):v(10)
-    @test v(0) * r isa ConstRange
+    @test v(0) * r isa ConstRange{IntegerVal{0}}
 
     @test v(1 // 2):5 ≡ v(1 // 2):9//2
+
+    @test AbstractArray{Int}(v(0)*r) isa ConstRange{Int}
 end
 
 @static if VERSION >= v"1.9"

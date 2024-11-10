@@ -89,5 +89,5 @@ end
 
 for T in (TypedEndsStepRange, LinRange, StepRangeLen)
     @eval broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::RationalValUnion, r::$T) = x*_first(r):x*_step(r):x*last(r)
-    @eval broadcasted(::DefaultArrayStyle{1}, ::typeof(*), ::IntegerVal{0}, r::$T) = ConstRange(IntegerVal{0}, length(r))
+    @eval broadcasted(::DefaultArrayStyle{1}, ::typeof(*), ::IntegerVal{0}, r::$T) = ConstRange(IntegerVal{0}(), length(r))
 end

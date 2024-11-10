@@ -19,6 +19,11 @@ step(::ConstRange) = IntegerVal{0}()
 last(r::ConstRange) = r.value
 length(r::ConstRange) = r.length
 
+TypedEndsStepRange{T}(r::TypedEndsStepRange) where {T} = TypedEndsStepRange{T}(r.start, r.step, r.stop)
+AbstractRange{T}(r::TypedEndsStepRange) where {T} = TypedEndsStepRange{T}(r)
+AbstractRange{T}(r::ConstRange) where {T} = ConstRange(T(r.value), r.length)
+AbstractVector{T}(r::Union{TypedEndsStepRange,ConstRange}) where T=AbstractRange{T}(r)
+
 _rangestop(start, step, stop) = convert(Integer, fld(stop - start, step)) * step + start
 _rangestop(::Integer, ::IntegerVal{1}, stop) = floor(Integer, stop)
 function _steprange(start, step, stop)
@@ -40,7 +45,7 @@ oneto(r::IntegerVal) = IntegerVal(1):r
 broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::Number, r::TypedEndsStepRange) = x*_first(r):x*_step(r):x*last(r)
 broadcasted(::DefaultArrayStyle{1}, ::typeof(*), r::TypedEndsStepRange, x::Number) = _first(r)*x:_step(r)*x:last(r)*x
 broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::RationalValUnion, r::AbstractRange) = x*_first(r):x*_step(r):x*last(r)
-broadcasted(::DefaultArrayStyle{1}, ::typeof(*), ::IntegerVal{0}, r::AbstractRange) = ConstRange(IntegerVal{0}, length(r))
+broadcasted(::DefaultArrayStyle{1}, ::typeof(*), ::IntegerVal{0}, r::AbstractRange) = ConstRange(IntegerVal{0}(), length(r))
 
 _step(r::AbstractRange) = step(r)
 _step(::AbstractUnitRange) = IntegerVal{1}()
