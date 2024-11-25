@@ -93,6 +93,10 @@ end
     @test v(1 // 2):5 ≡ v(1 // 2):9//2
 
     @test AbstractArray{Int}(v(0)*r) isa ConstRange{Int}
+
+    r = 1.0:v(1//2):5
+    @test r isa TypedEndsStepRange{Float64,Float64,RationalVal{1,2},Float64}
+    @test axes(r) ≡ (Base.OneTo(9),)
 end
 
 @static if VERSION >= v"1.9"
