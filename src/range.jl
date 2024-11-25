@@ -4,7 +4,7 @@ struct TypedEndsStepRange{T,L,S,R} <: AbstractRange{T}
     stop::R
 end
 TypedEndsStepRange{T}(start::L, step::S, stop::R) where {T,L,S,R} = TypedEndsStepRange{T,L,S,R}(start, step, stop)
-length(r::TypedEndsStepRange) = fld(r.stop - r.start, r.step) + IntegerVal(1)
+length(r::TypedEndsStepRange) = Integer(fld(r.stop - r.start, r.step)) + IntegerVal(1)
 axes(r::TypedEndsStepRange) = (Base.oneto(length(r)),)
 first(r::TypedEndsStepRange) = r.start
 step(r::TypedEndsStepRange) = r.step
