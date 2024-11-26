@@ -12,6 +12,11 @@ promote_rule(::Type{<:IntegerVal}, ::Type{<:InfiniteCardinal}) = Integer
 
 _rangestop(::Integer, ::IntegerVal, stop::Union{PosInfinity,RealInfinity}) = InfiniteCardinal{0}()
 
+function _steprange(start, step, stop::Union{PosInfinity,RealInfinity})
+    s = _rangestop(start, step, stop)
+    TypedEndsStepRange{promote_type(typeof(start), typeof(step), Int)}(start, step, s)
+end
+
 @propagate_inbounds function getindex(r::TypedEndsStepRange, v::AbstractRange{<:Integer})
     @boundscheck checkbounds(r, v)
     unsafe_getindex(r, v)

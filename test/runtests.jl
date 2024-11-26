@@ -97,6 +97,10 @@ end
     r = 1.0:v(1//2):5
     @test r isa TypedEndsStepRange{Float64,Float64,RationalVal{1,2},Float64}
     @test axes(r) ≡ (Base.OneTo(9),)
+
+    r = v(1//2):v(3)
+    @test last(r) ≡ v(5//2)
+    @test eltype(r) ≡ Rational{Int}
 end
 
 @static if VERSION >= v"1.9"
@@ -104,8 +108,8 @@ end
         @testset "Infinities" begin
             using Infinities, InfiniteArrays
 
-            @test IntegerVal{1}():∞ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
-            @test IntegerVal{1}():ℵ₀ isa TypedEndsStepRange{Integer,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
+            @test IntegerVal{1}():∞ isa TypedEndsStepRange{Int,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
+            @test IntegerVal{1}():ℵ₀ isa TypedEndsStepRange{Int,IntegerVal{1},IntegerVal{1},InfiniteCardinal{0}}
 
             r = IntegerVal{1}():∞
             @test r[1] ≡ 1
@@ -117,9 +121,12 @@ end
             @test InfiniteArrays.MemoryLayout(r) ≡ InfiniteArrays.LazyLayout()
 
             @test fld(RealInfinity(), v(1 // 2)) ≡ RealInfinity()
-            @test v(1 // 2) * Base.oneto(∞) isa TypedEndsStepRange{Real,RationalVal{1,2},RationalVal{1,2},RealInfinity}
+            @test v(1 // 2) * Base.oneto(∞) isa TypedEndsStepRange{Rational{Int},RationalVal{1,2},RationalVal{1,2},RealInfinity}
 
             @test v(0) * ∞ ≡ v(0) * ℵ₀ ≡ v(0) * (-∞) ≡ v(0)
+
+            r = v(1//2):∞
+            @test eltype(r) ≡ Rational{Int}
         end
         @testset "IrrationalConstants" begin
             using IrrationalConstants
