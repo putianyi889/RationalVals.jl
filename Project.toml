@@ -1,7 +1,7 @@
 name = "RationalVals"
 uuid = "9cc9807e-afa3-477e-9918-05cd8014b9f1"
-authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
 version = "0.0.5"
+authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -22,7 +22,7 @@ RationalValsSpecialFunctionsExt = "SpecialFunctions"
 [compat]
 Aqua = "0.8"
 Dates = "1"
-InfiniteArrays = "0.14"
+InfiniteArrays = "0.14, 0.15"
 Infinities = "0.1"
 IrrationalConstants = "0.2"
 LinearAlgebra = "1"
