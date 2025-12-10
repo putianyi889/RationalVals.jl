@@ -1,6 +1,6 @@
 name = "RationalVals"
 uuid = "9cc9807e-afa3-477e-9918-05cd8014b9f1"
-version = "0.0.5"
+version = "0.0.6"
 authors = ["Tianyi Pu <912396513@qq.com> and contributors"]
 
 [deps]
