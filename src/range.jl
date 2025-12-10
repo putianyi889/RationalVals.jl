@@ -30,6 +30,7 @@ function _steprange(start, step, stop)
     s = _rangestop(start, step, stop)
     TypedEndsStepRange{promote_type(typeof(start), typeof(step), typeof(s))}(start, step, s)
 end
+
 (:)(start::RationalValUnion, step::Real, stop::Real) = _steprange(start, step, stop)
 (:)(start::Real, step::RationalValUnion, stop::Real) = _steprange(start, step, stop)
 (:)(start::Real, step::Real, stop::RationalValUnion) = _steprange(start, step, stop)

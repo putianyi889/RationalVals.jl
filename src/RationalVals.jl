@@ -2,7 +2,7 @@ module RationalVals
 
 import Base: +, -, *, /, ^, //, show, inv, promote_rule, zero, one, oneunit, cmp, min, max, minmax, deg2rad, rad2deg, isqrt # misc
 import Base: div, divgcd # integer/rational
-import Base: iszero, isone, <, ==, <= # boolean
+import Base: iszero, isone, isfinite, <, ==, <= # boolean
 import Base: fld, cld, mod, rem, fld1, mod1 # integer
 import Base: sin, cos, tan,
     sind, cosd, tand,
@@ -35,7 +35,12 @@ IntegerVal(p::Integer) = IntegerVal{Int(p)}()
 
 The rational `p//q` where `q!=1`. See also [`IntegerVal`](@ref). The parameter allows one to dispatch on value.
 """
-struct RationalVal{p,q} <: Real end
+struct RationalVal{p,q} <: Real 
+    function RationalVal{p,q}() where {p,q}
+        Base.iszero(p) && Base.iszero(q) && (p//q)
+        return new{p,q}()
+    end
+end
 
 const RationalValUnion = Union{<:IntegerVal,<:RationalVal}
 
@@ -57,7 +62,7 @@ promote_rule(::Type{<:RationalValUnion}, ::Type{<:RationalValUnion}) = Rational{
 promote_rule(::Type{Rational{T}}, ::Type{<:RationalValUnion}) where {T<:Integer} = Rational{T}
 
 (::Type{T})(p::RationalValUnion) where {T<:Real} = T(_value(p))
-Integer(x::IntegerVal) = x
+Base.Integer(x::IntegerVal) = x
 
 for f in (:-, :isqrt)
     @eval $f(p::RationalValUnion) = RationalValUnion($f(_value(p)))
@@ -75,6 +80,10 @@ end
 for op in (:<, :(<=), :(==))
     @eval $op(p::RationalValUnion, q::RationalValUnion) = $op(_value(p), _value(q))
 end
+
+isfinite(::IntegerVal) = true
+isfinite(::RationalVal{p,0}) where {p} = false
+isfinite(::RationalVal{p,q}) where {p,q} = true
 
 inv(::IntegerVal{p}) where {p} = RationalVal{1,p}()
 minmax(p::RationalValUnion, q::RationalValUnion) = isless(_value(p), _value(q)) ? (p, q) : (q, p)

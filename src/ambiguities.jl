@@ -48,9 +48,13 @@ for T in (Number, RationalValUnion, BitArray, Complex, IntegerVal{1},
 end
 /(a::Rational, x::IntegerVal) = a * inv(x)
 
+^(a::Union{Float16, Float32}, ::IntegerVal{1}) = a
+^(a::Union{Float16, Float32}, ::IntegerVal{0}) = IntegerVal{1}()
+
 for T in (BigInt, BigFloat, Regex, Irrational{:ℯ}, Rational, Number,
     Complex, Complex{<:AbstractFloat}, Complex{<:Integer}, Complex{<:Rational},
     Float64, Float32, Float16,
+    Union{Float16, Float32},
     AbstractMatrix, AbstractMatrix{<:Integer},
     Union{AbstractString,AbstractChar},
     LinearAlgebra.AbstractQ,
@@ -63,6 +67,9 @@ for T in (BigInt, BigFloat, Regex, Irrational{:ℯ}, Rational, Number,
     LinearAlgebra.Hermitian,
     LinearAlgebra.Symmetric{<:Real},
     LinearAlgebra.Symmetric{<:Complex},
+    LinearAlgebra.SymTridiagonal{<:Integer},
+    LinearAlgebra.SymTridiagonal{<:Real},
+    LinearAlgebra.SymTridiagonal{<:Complex},
     LinearAlgebra.UniformScaling)
     @eval ^(a::$T, ::IntegerVal{p}) where {p} = Base.literal_pow(^, a, Val{p}())
 end
