@@ -5,12 +5,19 @@ using Aqua
 v(p::Int) = IntegerVal{p}()
 v(p::Rational{Int}) = RationalVal{numerator(p),denominator(p)}()
 
+@testset "constructor" begin
+    @test_throws ArgumentError RationalVal{0,0}()
+end
+
 @testset "boolean" begin
     @test v(0) == 0
     @test v(1) == true
     @test iszero(v(0)) ≡ isone(v(1)) ≡ (v(2) == v(2)) ≡ (v(1 // 2) == v(1 // 2)) ≡ true
     @test iszero(v(1)) ≡ isone(v(0)) ≡ (v(2) == v(1 // 2)) ≡ false
     @test (v(0) < v(1 // 3) < v(1 // 2) < v(1)) ≡ (v(0) ≤ v(1 // 3) ≤ v(1 // 2) ≤ v(1)) ≡ (isless(v(0), v(1))) ≡ (v(1) > v(0)) ≡ (v(1) ≥ v(0)) ≡ true
+
+    @test isfinite(v(0)) ≡ isfinite(v(1)) ≡ isfinite(v(1 // 2)) ≡ true
+    @test isfinite(v(1//0)) ≡ false
 end
 
 @testset "arithmetic" begin
